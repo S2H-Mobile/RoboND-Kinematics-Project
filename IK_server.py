@@ -6,8 +6,10 @@
 # Robotics nano-degree program
 #
 # All Rights Reserved.
-
+#
 # Author: Harsh Pandya
+#
+# Modified by Stephan Hohne.
 
 # import modules
 import rospy
@@ -19,16 +21,26 @@ from geometry_msgs.msg import Pose
 from mpmath import *
 from sympy import *
 
-# Rotation from joint_3 to joint_0
 R3_0 = None
+"""sympy.matrix: Rotation from joint_3 to joint_0.
 
-# evaluate arcus cosinus with arcus tangens
+This 3x3 rotation matrix is needed to solve the orientation part
+of the inverse kinematics problem.
+"""
+
 arccos = lambda D: atan2(sqrt(1 - D**2), D)
+"""Trigonometric function that returns the angle phi for the given D = cos(phi). Uses mpmath.atan2
+in order to return the signed angle.
 
-# cosine law
-# returns the cosinus of the angle between a,b
-# c denotes the side opposite to the angle
+.. _Sympy Reference Trigonometric functions:
+   http://docs.sympy.org/0.7.5/modules/mpmath/functions/trigonometric.html#mpmath.atan2
+"""
+
 cosine_law = lambda c, a, b: (a**2 + b**2 - c**2) / (2 * a * b)
+"""Function cosine law for a given sss triangle. Returns the cosinus of the angle between sides a,b.
+
+The side opposite to the returned angle is denoted c and must be entered as the first argument.
+"""
 
 # Symbols for Denavit-Hartenberg parameters
 q1, q2, q3, q4, q5, q6, q7 = symbols('q1:8') # joint angles (theta_i)         
@@ -46,8 +58,17 @@ s = {alpha0:     0,  a0:        0, d1:  0.75,
      alpha6:     0,  a6:        0, d7: 0.303, q7:       0}
 
 def forward_kinematics():
-    """
-        Generates all constant transformation matrices that are used by the service.
+    """Solves the forward kinematics problem for the DH parameters specified by the global dictionary s.
+
+    The DH frame assignments leading to the matrices used here are described writeup and in the
+    kinematics_test.ipynb notebook. 
+    
+    The rotation matrix R3_0 calculated here will be used in the function inverse_kinematics(p, R) to solve
+    the orientation part of the inverse kinematics problem. 
+
+    Returns:
+        sympy.matrix: The rotation matrix R0_3_T = R3_0, i.e. the rotation from frame 3 to frame 0.
+
     """
 
     # measure the execution time
@@ -73,26 +94,41 @@ def forward_kinematics():
                    [                   0,                   0,            0,               1]])
     T2_3 = T2_3.subs(s)
     
-    # Transform from base_link to link_3
+    # Transformation from frame 0 to frame 3
     T0_3 = trigsimp(T0_1 * T1_2 * T2_3)
     
-    # Rotation from base_link to link_3
+    # Rotation from frame 0 to frame 3
     R0_3 = T0_3[0:3, 0:3]
     
-    # Rotation from link_3 to base_link
+    # Rotation from frame 3 to frame 0. The inverse rotation matrix is equal to its transpose.
     R0_3_T = R0_3.transpose()
 
     print("Generating transformation matrices took {:6.2f} seconds.".format(time.clock() - start))
     return R0_3_T
 
 
-def inverse_kinematics(p_in, R_in):
+def inverse_kinematics(p, R):
+    """Solves the inverse kinematics problem for the requested pose given by p and R by applying
+    the spherical wrist solution algorithm.
+    
+    Uses the global variables s for the DH parameter values and R3_0 for the rotation from frame 3 to frame 0.
+
+    The trigonometry leading to the IK algorithm and the frame assignments are described in detail in the writeup.
+
+    Args:
+        p (array): The requested end-effector position as a vector with Cartesian components.
+        R (array): The requested end-effector orientation as a rotation matrix.
+
+    Returns:
+        array(float): A configuration of six joint angles that solves the requested pose.
+
     """
-    Calculate joint angles with inverse kinematics.
-    """
+    
     # convert inputs to sympy matrices
-    p = Matrix(p_in)
-    R = Matrix(R_in)
+    p = Matrix(p)
+    R = Matrix(R)
+    
+    # Duplicate of code below can be found in kinematics_test.ipynb for testing purposes.
     
     ### WRIST CENTER ###
 
@@ -104,7 +140,7 @@ def inverse_kinematics(p_in, R_in):
     # The sides of the triangle are l23, l25 and l35.
     # The relevant angles are phi2 between l23 and l25, and phi3 between l23 and l35.
 
-    # xc is projection of wrist center in (X_0, Y_0) plane minus offset from joint 2
+    # xc is length of projection of wrist center in (X_0, Y_0) plane minus offset from joint 2
     xc = norm([w[0], w[1]]) - s[a1]
 
     # yc is w component in Z_0 direction minus offset from joint 2
@@ -127,7 +163,7 @@ def inverse_kinematics(p_in, R_in):
     phi3 = arccos(D3)
 
     # Offset for theta3 due to arm design
-    delta = atan2(s[a3], s[d4])
+    delta = abs(atan2(s[a3], s[d4]))
 
     # theta3 from angle phi3 and offset delta
     theta3 = (pi/2 - phi3 - delta).evalf()
@@ -142,7 +178,7 @@ def inverse_kinematics(p_in, R_in):
     # alpha is the angle between x-axis and the line l25 in the xy-plane
     alpha = atan2(yc, xc)
 
-    # theta3 from angle phi2 and angle alpha
+    # theta2 from angle phi2 and angle alpha
     theta2 = (pi/2 - phi2 - alpha).evalf()
 
     ### THETA 4, 5, 6 ###
