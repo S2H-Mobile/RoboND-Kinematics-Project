@@ -14,8 +14,8 @@
 
 [dh-transform-matrix]: ./images/dh-transform-matrix.png
 [drawing_dh_frames]: ./images/drawing_dh_frames_kr210.jpg
-[dh-parameter-table]: ./images/dh-parameter-table.png
-[urdf-parameter-table]: ./images/urdf-parameter-table.png
+[dh-parameter-table]: ./images/dh-parameter-table.PNG
+[urdf-parameter-table]: ./images/urdf-parameter-table.PNG
 [drawing-sss-triangle]: ./images/drawing_sss_triangle.jpg
 [wrist-center-plane]: ./images/wrist-center-plane.jpg
 [theta3-offset]: ./images/theta3-offset.jpg
@@ -111,18 +111,26 @@ The point ``(x_c, y_c)`` will be soon very helpful in defining a triangle for fi
 ##### ``theta1``
 The first angle is fairly straightforward since the tangens of ``theta1`` is given by the ratio of the ``Y_0`` and ``X_0`` components of either the wrist center ``w`` or equivalently the end-effector position ``p`` in frame ``O_0``, see drawing above. So the joint variable is given by
 
-```
+``
 theta1 = atan2(p[1], p[0])
-```
+``
 
 There is a second solution ``theta1 + pi`` that can be choosen when the arm is in a configuration where the wrist center ``X_0`` is below zero, i.e. the arm is "reaching backwards". Looking at the forward kinematics demo in Rviz, this solution seems to be inside the working range of the KR210 arm design. Nevertheless in the simulation this configuration seems to be outside the planning range (the white box in gazebo), so I choose the first solution.   
 
 ##### ``theta2``
+First I calculate the distances between joints 2-3, 2-5 and 3-5, respectively. 
+
+``l23 = a2``
+
+``l25 = norm(xc, yc)``
+
+``l35 = norm(a3, d4)``
+
 The lines ``l23``, ``l25`` and ``l35`` constitute the three sides of a sss triangle, see the figure below. The triangle determines the the angles ``phi2`` and ``phi3`` by the cosine law. These angles can be used to calculate the joint variables ``theta2`` and ``theta3``, respectively. The equation yielding the second joint variable is given by
 
-```
+``
 theta2 = pi/2 - phi2 - alpha
-```
+``
 
 where ``alpha`` is the angle between x-axis and ``l25``.
 
@@ -131,9 +139,9 @@ where ``alpha`` is the angle between x-axis and ``l25``.
 ##### ``theta3``
 Most of the work to determine ``theta3`` is done at this point. Only the offset ``a3`` between joint 3 and the wrist center needs to be taken into account. The trigonometry depicted below leads to the equation for joint variable 3,
 
-```
+``
 theta3 = pi/2 - phi3 - delta
-```.
+``
 
 The offset is accommodated for by the angle ``delta = atan2(a3,d4)``.
 
