@@ -1,0 +1,26 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Craig%
+}{%
+Craig%
+}{%
+{\protect \APACyear {2005}}%
+}]{%
+Craig-2005}
+\APACinsertmetastar {%
+Craig-2005}%
+\begin{APACrefauthors}%
+Craig, J\BPBI J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYear{2005}.
+\newblock
+\APACrefbtitle {Introduction to Robotics: Mechanics and Control} {Introduction
+  to robotics: Mechanics and control}.
+\newblock
+\APACaddressPublisher{}{Pearson Education Inc., NJ}.
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}
