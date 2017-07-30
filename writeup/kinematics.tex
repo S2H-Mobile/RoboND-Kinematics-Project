@@ -100,17 +100,13 @@ Special cases involving the $Z$ axes are
 To keep track of the values of these parameters while constructing the reference frames, we write them down in a table. Once the frame assignments are made, the DH parameters are typically presented in tabular form. Each row in the table corresponds to the transform from frame $i$ to frame $i+1$.
 
 \subsection{Homogeneous Transformations}
-The concepts of rotations, translations, and homogeneous transforms are essential to understanding the forward kinematics problem of manipulators: given the joint variables, calculate the location of the end effector. The solution procedure involves attaching a reference frame to each link of the manipulator and writing the homogeneous transforms from the fixed base link to the subsequent links, all the way to the end effector.  The resulting transformation is then the matrix product of the transformations. For a robot with $n + 1$ links $\left\lbrace 0, \ldots , n\right\rbrace$ this is a product over the $n$ joints,
-\begin{equation}
-\prescript{0}{n} T = \prod_{i = 1}^n
-\prescript{i-1}{i} T
-\end{equation}
+The concepts of rotations, translations, and homogeneous transforms are essential to understanding the forward kinematics problem of manipulators: given the joint variables, calculate the location of the end effector. The solution procedure involves attaching a reference frame to each link of the manipulator and writing the homogeneous transforms from the fixed base link to the subsequent links, all the way to the end effector.
 
 The homogeneous transform from frame $i-1$ to frame $i$ is composed of a sequence of four basic transformations, two rotations $R$ and two translations $D$,
 \begin{equation}
 \prescript{i-1}{i} T =
 R \left(X_{i-1} , \alpha_{i-1}\right) D \left(X_{i-1} , a_{i-1}\right)
-R \left( Z_i , \theta_i\right) D_Z \left( Z_i , d_i\right) \, .
+R \left(Z_i , \theta_i\right) D \left(Z_i , d_i\right) \, .
 \end{equation}
 The corresponding homogeneous transform matrix is of the form 
 \begin{equation}
@@ -120,10 +116,18 @@ c \theta_i & -s\theta_i & 0 & a_{i-1} \\
 s \theta_i \, c \alpha_{i-1} & c \theta_i \, c \alpha_{i-1} & -s \alpha_{i-1} & -s \alpha_{i-1} d_i \\
 s \theta_i \, s \alpha_{i-1} & c \theta_i \, s \alpha_{i-1} &  c \alpha_{i-1} & c \alpha_{i-1} d_i \\
 0 & 0 & 0 & 1
-\end{pmatrix} \, .
+\end{pmatrix} \, ,
+\end{equation}
+where we introduce the shorthand notations $s \theta$ for $\sin (\theta)$ and $c \theta$ for $\cos (\theta)$.
+
+The overall transformation from the base link to the end-effector is the matrix product of the individual transformations. For a robot with $n + 1$ links numbered as $0, \ldots , n$ the overall transformation is given by
+\begin{equation}
+\prescript{0}{n} T = \prod_{i = 1}^n
+\prescript{i-1}{i} T =
+\prescript{0}{1} T \, \prescript{1}{2} T \, \ldots \prescript{n-1}{n} T \, .
 \end{equation}
 
-Given the DH parameters, either as constant values provided by the robot design, or variables determined by the current robot pose we can then read off the pose of the end effector from the overall transformation matrix $\prescript{0}{n} T$. The location in Cartesian coordinates and the orientation in Euler angles.
+When we know the Denavit-Hartenberg parameters provided by the robot design and the joint variables determined by the current robot pose, we can insert their values into the overall transformation matrix $\prescript{0}{n} T$ and read off the pose of the end effector.
 
 \subsection{Inverse Kinematics for a Spherical Wrist}
 This section follows lesson 2-18. Often the last three joints in a manipulator are revolute joints with intersecting joint axes. Such a design is called a spherical wrist and the common point of intersection is called the wrist center. The advantage this design is that it kinematically decouples the position and orientation of the end effector. Mathematically, this means that instead of solving twelve nonlinear equations simultaneously (one equation for each term in the first three rows of the overall homogeneous transform matrix), it is now possible to independently solve two simpler problems: first, the Cartesian coordinates of the wrist center, and then the composition of rotations to orient the end effector. Physically speaking, a six degree of freedom serial manipulator with a spherical wrist would use the first three joints to control the position of the wrist center while the last three joints would orient the end effector as needed.
