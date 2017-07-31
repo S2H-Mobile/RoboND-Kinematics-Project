@@ -107,17 +107,18 @@ def forward_kinematics():
     return R0_3_T
 
 
-def inverse_kinematics(p, R):
+def inverse_kinematics(p, R, R3_0):
     """Solves the inverse kinematics problem for the requested pose given by p and R by applying
     the spherical wrist solution algorithm.
     
-    Uses the global variables s for the DH parameter values and R3_0 for the rotation from frame 3 to frame 0.
+    Uses the global dictionary s for the DH parameter values.
 
     The trigonometry leading to the IK algorithm and the frame assignments are described in detail in the writeup.
 
     Args:
         p (array): The requested end-effector position as a vector with Cartesian components.
         R (array): The requested end-effector orientation as a rotation matrix.
+        R3_0     : The constant rotation matrix from frame 3 to frame 0.
 
     Returns:
         array(float): A configuration of six joint angles that solves the requested pose.
@@ -229,7 +230,7 @@ def handle_calculate_IK(req):
            
             # Populate response for the IK request            
             joint_trajectory_point = JointTrajectoryPoint()            
-            joint_trajectory_point.positions = inverse_kinematics(p, R_rpy) # call inverse kinematics function
+            joint_trajectory_point.positions = inverse_kinematics(p, R_rpy, R3_0) # call inverse kinematics function
             joint_trajectory_list.append(joint_trajectory_point)
 
         rospy.loginfo("Length of Joint Trajectory List: %s" % len(joint_trajectory_list))
