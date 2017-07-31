@@ -11,5 +11,5 @@ A solution of the inverse kinematics problem for the KUKA KR210 robotic arm pose
 ## Setup and Usage 
 1. Follow the setup instructions of the [Udacity Kinematics project](https://github.com/udacity/RoboND-Kinematics-Project).
 2. Replace [IK_server.py](https://github.com/udacity/RoboND-Kinematics-Project/blob/master/kuka_arm/scripts/IK_server.py) by the one provided [here](https://github.com/S2H-Mobile/RoboND-Kinematics-Project/blob/master/IK_server.py).
-3. Replace [IK_debug.py](https://github.com/udacity/RoboND-Kinematics-Project/blob/master/kuka_arm/scripts/IK_debug.py) by the one provided [here](https://github.com/S2H-Mobile/RoboND-Kinematics-Project/blob/master/IK_debug.py).
+3. Replace [IK_debug.py](https://github.com/udacity/RoboND-Kinematics-Project/blob/master/IK_debug.py) by the one provided [here](https://github.com/S2H-Mobile/RoboND-Kinematics-Project/blob/master/IK_debug.py).
 4. Follow the instructions of the [Udacity Kinematics project](https://github.com/udacity/RoboND-Kinematics-Project) to run the simulation.
