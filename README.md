@@ -1,6 +1,8 @@
 # RoboND-Kinematics-Project
 This is a solution of the [Robotic arm - Pick & Place project](https://github.com/udacity/RoboND-Kinematics-Project) as part of the Robotics Nanodegree by Udacity. The inverse kinematics problem for the KUKA KR210 robotic arm is solved in order to perform a pick and place operation in a simulated Gazebo environment.
 
+![Screenshot of Gazebo simulator.](screenshot.png "Screenshot of Gazebo simulator.")
+
 ## Contents
 - [IK_server.py](https://github.com/S2H-Mobile/RoboND-Kinematics-Project/blob/master/IK_server.py) is the Python module that solves the inverse kinematics problem.
 - [IK_debug.py](https://github.com/S2H-Mobile/RoboND-Kinematics-Project/blob/master/IK_debug.py) is a Python script for testing the inverse kinematics solution in ``IK_server.py``.
